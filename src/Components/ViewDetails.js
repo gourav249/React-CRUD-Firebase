@@ -125,8 +125,14 @@ const ViewDetails = () => {
                             "https://dummyimage.com/600x400/000/fff&text=upload"
                           }
                           alt={row?.imgUrl}
-                          height={"100%"}
-                          width={"100%"}
+                          style={{
+                            height: "100%",
+                            width: "100%",
+                            imageRendering: "auto",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
                         />
                       }
                     </Avatar>
