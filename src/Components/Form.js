@@ -29,6 +29,7 @@ import {
 import Alert from "@material-ui/lab/Alert";
 import { DropzoneArea } from "material-ui-dropzone";
 import { Autocomplete } from "@material-ui/lab";
+import useCollegeName from "../Hooks/useCollegeName";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -62,6 +63,7 @@ const Branch = [
 ];
 const Form = () => {
   const classes = useStyles();
+  const { collegeNameList } = useCollegeName();
   const [openBackDrop, setOpenBackDrop] = useState(false);
   const [degination, setDegination] = useState("");
   const [showAlert, setShowAlert] = useState({
@@ -169,7 +171,7 @@ const Form = () => {
                       <TextField
                         variant="outlined"
                         placeholder="Student D.O.B"
-                        helperText="Enter Your Student D.O.B"
+                        helperText="Select Your Student D.O.B"
                         fullWidth
                         required
                         type="date"
@@ -177,21 +179,29 @@ const Form = () => {
                         onChange={(e) => setStudentBirthDate(e.target.value)}
                       />
                     </Grid>
+
                     <Grid item md={6} sm={12} xs={12}>
-                      <TextField
-                        variant="outlined"
-                        label="Student College Name"
-                        helperText="Enter Your Student College Name."
-                        fullWidth
-                        required
-                        type="text"
+                      <Autocomplete
+                        options={collegeNameList}
+                        getOptionLabel={(option) => option?.college}
+                        onChange={(event, value) => setCollegeName(value)}
                         value={collegeName}
-                        onChange={(e) => setCollegeName(e.target.value)}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            helperText="Select Your Student College Name."
+                            placeholder="College Name"
+                            margin="normal"
+                            variant="outlined"
+                          />
+                        )}
                       />
                     </Grid>
+
                     <Grid item md={6} sm={12} xs={12}>
                       <FormControl
                         variant="outlined"
+                        margin="normal"
                         fullWidth
                         className={classes.formControl}
                       >
