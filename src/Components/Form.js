@@ -30,6 +30,8 @@ import Alert from "@material-ui/lab/Alert";
 import { DropzoneArea } from "material-ui-dropzone";
 import { Autocomplete } from "@material-ui/lab";
 import useCollegeName from "../Hooks/useCollegeName";
+import useCourse from "../Hooks/useCourse";
+import useDepartement from "../Hooks/useDepartement";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -51,19 +53,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const degree = [
-  { Degreename: "The Shawshank Redemption", id: 1 },
-  { Degreename: "The Godfather", id: 2 },
-  { Degreename: "The Godfather: Part II", id: 3 },
-];
-const Branch = [
-  { Branchname: "The Shawshank Redemption", id: 1 },
-  { Branchname: "The Godfather", id: 2 },
-  { Branchname: "The Godfather: Part II", id: 3 },
-];
 const Form = () => {
   const classes = useStyles();
   const { collegeNameList } = useCollegeName();
+  const { courseNameList } = useCourse();
+  const { DepartementNameList } = useDepartement();
   const [openBackDrop, setOpenBackDrop] = useState(false);
   const [degination, setDegination] = useState("");
   const [showAlert, setShowAlert] = useState({
@@ -214,17 +208,20 @@ const Form = () => {
                           <MenuItem value="">
                             <em>None</em>
                           </MenuItem>
-                          <MenuItem value={10}>Ten</MenuItem>
-                          <MenuItem value={20}>Twenty</MenuItem>
-                          <MenuItem value={30}>Thirty</MenuItem>
+                          <MenuItem value={10}>10</MenuItem>
+                          <MenuItem value={15}>15</MenuItem>
+                          <MenuItem value={20}>20</MenuItem>
+                          <MenuItem value={25}>25</MenuItem>
+                          <MenuItem value={30}>30</MenuItem>
+                          <MenuItem value={35}>35</MenuItem>
                         </Select>
                         <FormHelperText>Select Your Age.</FormHelperText>
                       </FormControl>
                     </Grid>
                     <Grid item md={6} sm={12} xs={12}>
                       <Autocomplete
-                        options={degree}
-                        getOptionLabel={(option) => option?.Degreename}
+                        options={courseNameList}
+                        getOptionLabel={(option) => option?.course}
                         onChange={(event, value) => setDegreeName(value)}
                         value={degreeName}
                         renderInput={(params) => (
@@ -240,8 +237,8 @@ const Form = () => {
                     </Grid>
                     <Grid item md={6} sm={12} xs={12}>
                       <Autocomplete
-                        options={Branch}
-                        getOptionLabel={(option) => option?.Branchname}
+                        options={DepartementNameList}
+                        getOptionLabel={(option) => option?.departement}
                         onChange={(event, value) => setBranchName(value)}
                         value={branchName}
                         renderInput={(params) => (
