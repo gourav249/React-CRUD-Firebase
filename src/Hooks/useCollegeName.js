@@ -4,9 +4,7 @@ const useCollegeName = () => {
   const [collegeNameList, setCollegeNameList] = useState([]);
   useEffect(() => {
     setCollegeNameList([
-      {
-        college: "IIT, Delhi (Delhi)",
-      },
+      { id: 1, college: "IIT, Delhi (Delhi)" },
       {
         college: "IIT, Bombay (Mumbai)",
       },
