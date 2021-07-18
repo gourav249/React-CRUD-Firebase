@@ -27,6 +27,7 @@ import useCourse from "../Hooks/useCourse";
 import useDepartement from "../Hooks/useDepartement";
 import { useHistory } from "react-router-dom";
 import swal from "sweetalert";
+import { auth, database, storage } from "../config";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -76,24 +77,50 @@ const Form = () => {
   const [studentAge, setStudentAge] = useState("");
   const [degreeName, setDegreeName] = useState("");
   const [branchName, setBranchName] = useState("");
+  const [picFile, setPicFile] = useState({});
 
   const handleSubmit = async (e) => {
     try {
+      setOpenBackDrop(true);
       e.preventDefault();
+      const storageRef = `StudentDetails/ProfilePic`;
+      const res = await storage.ref(storageRef).put(picFile);
+      const imgUrl = await res.ref.getDownloadURL();
+
+      await database.ref(`StudentDetails`).push({
+        registration,
+        studentName,
+        studentEmail,
+        studentBirthDate,
+        collegeName,
+        studentAge,
+        branchName,
+        degreeName,
+        imgUrl,
+        timestamp: new Date().toLocaleString(),
+      });
       swal({
         title: "Thanks",
         text: "You have succesfully Submited!",
         icon: "success",
       });
-      console.log(registration);
-      console.log(studentName);
-      console.log(studentEmail);
-      console.log(studentBirthDate);
-      console.log(collegeName);
-      console.log(studentAge);
-      console.log(degreeName);
-      console.log(branchName);
-    } catch (error) {}
+    } catch (error) {
+      swal({
+        title: error.message,
+        text: "Your Data Have Not Submited succesfully!",
+        icon: "error",
+      });
+    } finally {
+      setRegistration("");
+      setStudentName("");
+      setStudentEmail("");
+      setStudentBirthDate("");
+      setCollegeName("");
+      setStudentAge("");
+      setDegreeName("");
+      setBranchName("");
+      setOpenBackDrop(false);
+    }
   };
 
   const handleRouteViewDetails = () => {
@@ -277,8 +304,7 @@ const Form = () => {
                       <DropzoneArea
                         filesLimit={1}
                         dropzoneText={`Upload Student Image`}
-                        //   value={speakerPhoto}
-                        //   onChange={(flie) => addSpeakerPhoto(flie[0])}
+                        onChange={(flie) => setPicFile(flie[0])}
                       />
                     </Grid>
                     <Grid item md={12} sm={12} xs={12}>
