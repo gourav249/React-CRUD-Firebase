@@ -1,8 +1,8 @@
 import React from "react";
-import Form from "./Components/Form";
 
+import Router from "./Router";
 const App = () => {
-  return <Form />;
+  return <Router />;
 };
 
 export default App;
