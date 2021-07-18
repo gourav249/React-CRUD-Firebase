@@ -119,6 +119,7 @@ const Form = () => {
       setStudentAge("");
       setDegreeName("");
       setBranchName("");
+      setPicFile({});
       setOpenBackDrop(false);
     }
   };

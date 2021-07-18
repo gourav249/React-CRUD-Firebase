@@ -4,7 +4,7 @@ import { database } from "../config";
 const useStudentsDetails = () => {
   const [studenDetails, setStudenDetails] = useState([]);
   useEffect(() => {
-    database.ref(``).on("value", (snap) => {
+    database.ref(`StudentDetails/`).on("value", (snap) => {
       if (snap.exists()) {
         const arr = [];
         let slno = 1;
@@ -14,7 +14,9 @@ const useStudentsDetails = () => {
           arr.push({
             ...obj[uid],
             slno: slno++,
-            timestamp: obj[uid]?.timestamp,
+            branchName: obj[uid]?.branchName?.departement,
+            collegeName: obj[uid]?.collegeName?.college,
+            degreeName: obj[uid]?.degreeName?.course,
             id: uid,
             uid,
           });

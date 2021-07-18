@@ -1,12 +1,42 @@
 import MaterialTable from "material-table";
-import React from "react";
+import React, { useState } from "react";
 import swal from "@sweetalert/with-react";
 import { useHistory } from "react-router-dom";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import useStudentsDetails from "../Hooks/useStudentsDetails";
+import {
+  Avatar,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  makeStyles,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+} from "@material-ui/core";
+
+function createData(name, data) {
+  return { name, data };
+}
+const useStyles = makeStyles({
+  table: {
+    minWidth: 550,
+  },
+});
 const ViewDetails = () => {
+  const classes = useStyles();
   const history = useHistory();
-  const handleOpen = () => {
+  const { studenDetails } = useStudentsDetails();
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState({});
+  const handleExit = () => {
     swal({
       title: "Are you sure?",
       text: "Are You Sure Want To Go Home Page!",
@@ -24,6 +54,41 @@ const ViewDetails = () => {
       }
     });
   };
+
+  const handleClose = () => setOpen(false);
+  const rows = [
+    createData(
+      "Profile Image",
+      data && data?.imgUrl ? (
+        <Avatar style={{ backgroundColor: "#1ab394" }}>
+          {
+            <img
+              src={
+                data?.imgUrl ||
+                "https://dummyimage.com/600x400/000/fff&text=upload"
+              }
+              alt={data?.imgUrl}
+              height={"100%"}
+              width={"100%"}
+            />
+          }
+        </Avatar>
+      ) : data && data?.studentName ? (
+        <Avatar style={{ backgroundColor: "#1ab394" }}>
+          {data?.studentName[0]}
+        </Avatar>
+      ) : (
+        "Not Available"
+      )
+    ),
+    createData("Student Name", data?.studentName),
+    createData("Registration", data?.registration),
+    createData("Student Email", data?.studentEmail),
+    createData("Student Age", data?.studentAge),
+    createData("Student Birth Date", data?.studentBirthDate),
+    createData("College Name", data?.collegeName),
+    createData("Branch Name", data?.branchName),
+  ];
   return (
     <div>
       <MaterialTable
@@ -38,38 +103,60 @@ const ViewDetails = () => {
           },
         }}
         columns={[
-          { title: "Name", field: "name" },
-          { title: "Surname", field: "surname" },
-          { title: "Birth Year", field: "birthYear", type: "numeric" },
+          { title: "Sl No.", field: "slno" },
+          { title: "Registration", field: "registration" },
+          { title: "Name", field: "studentName" },
+          { title: "Email", field: "studentEmail" },
+          { title: "Birth Date", field: "studentBirthDate" },
+          { title: "college Name", field: "collegeName" },
+
           {
-            title: "Birth Place",
-            field: "birthCity",
-            lookup: { 34: "İstanbul", 63: "Şanlıurfa" },
+            title: "Profile Image",
+            field: "imgUrl",
+            render: (row) => (
+              <Grid container>
+                <Grid item lg={1} md={1} sm={2}>
+                  {row && row?.imgUrl ? (
+                    <Avatar style={{ backgroundColor: "#1ab394" }}>
+                      {
+                        <img
+                          src={
+                            row?.imgUrl ||
+                            "https://dummyimage.com/600x400/000/fff&text=upload"
+                          }
+                          alt={row?.imgUrl}
+                          height={"100%"}
+                          width={"100%"}
+                        />
+                      }
+                    </Avatar>
+                  ) : (
+                    <Avatar style={{ backgroundColor: "#1ab394" }}>
+                      {row?.studentName[0]}
+                    </Avatar>
+                  )}
+                </Grid>
+              </Grid>
+            ),
           },
         ]}
-        data={[
-          { name: "Mehmet", surname: "Baran", birthYear: 1987, birthCity: 63 },
-          {
-            name: "Zerya Betül",
-            surname: "Baran",
-            birthYear: 2017,
-            birthCity: 34,
-          },
-        ]}
+        data={studenDetails}
         actions={[
           {
             icon: () => <ExitToAppIcon style={{ color: "#78838d" }} />,
             tooltip: "Exit Page",
             isFreeAction: true,
             onClick: (event) => {
-              handleOpen();
+              handleExit();
             },
           },
           {
             icon: () => <VisibilityIcon style={{ color: "#78838d" }} />,
             tooltip: "View Details",
             onClick: async (evt, data) => {
-              // previewCatalog([data?.id]);
+              setOpen(true);
+              setData(data);
+              console.log(data);
             },
           },
         ]}
@@ -88,6 +175,31 @@ const ViewDetails = () => {
             }),
         }}
       />
+
+      <div>
+        <Dialog fullWidth open={open} onClose={handleClose}>
+          <DialogTitle>Students's Details</DialogTitle>
+          <DialogContent>
+            <TableContainer component={Paper}>
+              <Table className={classes.table}>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow key={row.name}>
+                      <TableCell align="left">{row.name}</TableCell>
+                      <TableCell align="left">{row.data}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="outlined" onClick={handleClose} color="inherit">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
     </div>
   );
 };
