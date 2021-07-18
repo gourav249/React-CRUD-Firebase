@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Avatar,
   Backdrop,
   Box,
   Button,
@@ -8,7 +7,6 @@ import {
   CardContent,
   CircularProgress,
   Container,
-  CssBaseline,
   FormControl,
   FormHelperText,
   Grid,
@@ -20,18 +18,15 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import {
-  AddCircleOutline,
-  CloudUpload,
-  Send,
-  Visibility,
-} from "@material-ui/icons";
+import { Send, Visibility } from "@material-ui/icons";
 import Alert from "@material-ui/lab/Alert";
 import { DropzoneArea } from "material-ui-dropzone";
 import { Autocomplete } from "@material-ui/lab";
 import useCollegeName from "../Hooks/useCollegeName";
 import useCourse from "../Hooks/useCourse";
 import useDepartement from "../Hooks/useDepartement";
+import { useHistory } from "react-router-dom";
+import swal from "sweetalert";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -47,6 +42,13 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  underline: {
+    textTransform: "capitalize",
+    textDecoration: "underline",
+    textDecorationThickness: "5px",
+    textUnderlinePosition: "under",
+    textDecorationColor: "#53adf0",
+  },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: "#fff",
@@ -55,11 +57,11 @@ const useStyles = makeStyles((theme) => ({
 
 const Form = () => {
   const classes = useStyles();
+  const history = useHistory();
   const { collegeNameList } = useCollegeName();
   const { courseNameList } = useCourse();
   const { DepartementNameList } = useDepartement();
   const [openBackDrop, setOpenBackDrop] = useState(false);
-  const [degination, setDegination] = useState("");
   const [showAlert, setShowAlert] = useState({
     msg: "",
     isOpen: false,
@@ -78,6 +80,11 @@ const Form = () => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      swal({
+        title: "Thanks",
+        text: "You have succesfully Submited!",
+        icon: "success",
+      });
       console.log(registration);
       console.log(studentName);
       console.log(studentEmail);
@@ -88,9 +95,21 @@ const Form = () => {
       console.log(branchName);
     } catch (error) {}
   };
+
+  const handleRouteViewDetails = () => {
+    swal({
+      title: "Welcome To Studets Details Page",
+      text: "You have succesfully Come Students Details Page!",
+      icon: "success",
+    });
+    history.push(`/Details`);
+  };
   return (
     <div>
       <Card>
+        <Backdrop open={openBackDrop} style={{ zIndex: 99999, color: "#fff" }}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <Snackbar
           open={showAlert.isOpen}
           autoHideDuration={6000}
@@ -112,6 +131,7 @@ const Form = () => {
               letterSpacing={6}
               fontFamily="Monospace"
               fontSize={28}
+              className={classes.underline}
             >
               Students Form Details
             </Box>
@@ -294,6 +314,7 @@ const Form = () => {
                   color="inherit"
                   className={classes.submit}
                   startIcon={<Visibility />}
+                  onClick={handleRouteViewDetails}
                 >
                   View
                 </Button>
