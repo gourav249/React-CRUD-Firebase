@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  IconButton,
   makeStyles,
   Paper,
   Table,
@@ -20,16 +21,28 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  Toolbar,
+  Typography,
+  AppBar,
 } from "@material-ui/core";
+import { Close } from "@material-ui/icons";
 
 function createData(name, data) {
   return { name, data };
 }
-const useStyles = makeStyles({
+
+const useStyles = makeStyles((theme) => ({
+  appBar: {
+    position: "relative",
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
+  },
   table: {
     minWidth: 550,
   },
-});
+}));
 const ViewDetails = () => {
   const classes = useStyles();
   const history = useHistory();
@@ -105,7 +118,23 @@ const ViewDetails = () => {
         columns={[
           { title: "Sl No.", field: "slno" },
           { title: "Registration", field: "registration" },
-          { title: "Name", field: "studentName" },
+          {
+            title: <strong>{"User Name"}</strong>,
+            field: "studentName",
+            render: (row) => (
+              <Grid container spacing={5} alignItems="center">
+                <Grid item lg={4} md={4} sm={5}>
+                  <Avatar style={{ backgroundColor: "green" }}>
+                    {row.studentName[0]}
+                  </Avatar>
+                </Grid>
+                <Grid item lg={4} md={4} sm={5}>
+                  {row.studentName}
+                </Grid>
+              </Grid>
+            ),
+          },
+          // { title: "Name", field: "studentName" },
           { title: "Email", field: "studentEmail" },
           { title: "Birth Date", field: "studentBirthDate" },
           { title: "college Name", field: "collegeName" },
@@ -183,8 +212,24 @@ const ViewDetails = () => {
       />
 
       <div>
-        <Dialog fullWidth open={open} onClose={handleClose}>
-          <DialogTitle>Students's Details</DialogTitle>
+        <Dialog fullScreen open={open} onClose={handleClose}>
+          <AppBar className={classes.appBar}>
+            <Toolbar>
+              <Typography variant="h6" className={classes.title}>
+                Student Details
+              </Typography>
+
+              <IconButton
+                edge="end"
+                color="inherit"
+                onClick={handleClose}
+                aria-label="close"
+              >
+                <Close />
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+
           <DialogContent>
             <TableContainer component={Paper}>
               <Table className={classes.table}>
@@ -199,11 +244,11 @@ const ViewDetails = () => {
               </Table>
             </TableContainer>
           </DialogContent>
-          <DialogActions>
+          {/* <DialogActions>
             <Button variant="outlined" onClick={handleClose} color="inherit">
               Close
             </Button>
-          </DialogActions>
+          </DialogActions> */}
         </Dialog>
       </div>
     </div>
