@@ -15,6 +15,7 @@ import {
   Grid,
   IconButton,
   makeStyles,
+  withStyles,
   Paper,
   Table,
   TableBody,
@@ -27,6 +28,16 @@ import {
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    "&:nth-of-type(odd)": {
+      backgroundColor: "#bfbebe",
+    },
+    "&:nth-of-type(even)": {
+      backgroundColor: "#e8e0d9",
+    },
+  },
+}))(TableRow);
 function createData(name, data) {
   return { name, data };
 }
@@ -41,14 +52,21 @@ const useStyles = makeStyles((theme) => ({
   },
   table: {
     minWidth: 550,
+    boxShadow: "5px 10px #888888",
   },
 }));
 const ViewDetails = () => {
   const classes = useStyles();
   const history = useHistory();
-  const { studenDetails } = useStudentsDetails();
+  const { studenDetails, deleteStudentdetails, updateStudentdetails } =
+    useStudentsDetails();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState({});
+  const [showAlert, setShowAlert] = useState({
+    msg: "",
+    isOpen: false,
+    color: "",
+  });
   const handleExit = () => {
     swal({
       title: "Are you sure?",
@@ -99,8 +117,9 @@ const ViewDetails = () => {
     createData("Student Email", data?.studentEmail),
     createData("Student Age", data?.studentAge),
     createData("Student Birth Date", data?.studentBirthDate),
-    createData("College Name", data?.collegeName),
-    createData("Branch Name", data?.branchName),
+    createData("College Name", data?.college),
+    createData("Branch Name", data?.departement),
+    createData("Branch Name", data?.course),
   ];
   return (
     <div>
@@ -128,7 +147,7 @@ const ViewDetails = () => {
                     {row.studentName[0]}
                   </Avatar>
                 </Grid>
-                <Grid item lg={4} md={4} sm={5}>
+                <Grid item lg={2} md={2} sm={5}>
                   {row.studentName}
                 </Grid>
               </Grid>
@@ -137,7 +156,7 @@ const ViewDetails = () => {
           // { title: "Name", field: "studentName" },
           { title: "Email", field: "studentEmail" },
           { title: "Birth Date", field: "studentBirthDate" },
-          { title: "college Name", field: "collegeName" },
+          { title: "college Name", field: "college" },
 
           {
             title: "Profile Image",
@@ -199,12 +218,14 @@ const ViewDetails = () => {
           onRowUpdate: (newData, oldData) =>
             new Promise((resolve, reject) => {
               setTimeout(() => {
+                updateStudentdetails(newData);
                 resolve();
               }, 1000);
             }),
           onRowDelete: (oldData) =>
             new Promise((resolve, reject) => {
               setTimeout(() => {
+                deleteStudentdetails(oldData?.id);
                 resolve();
               }, 1000);
             }),
@@ -235,10 +256,10 @@ const ViewDetails = () => {
               <Table className={classes.table}>
                 <TableBody>
                   {rows.map((row) => (
-                    <TableRow key={row.name}>
+                    <StyledTableRow key={row.name}>
                       <TableCell align="left">{row.name}</TableCell>
                       <TableCell align="left">{row.data}</TableCell>
-                    </TableRow>
+                    </StyledTableRow>
                   ))}
                 </TableBody>
               </Table>
