@@ -3,10 +3,24 @@ import { database } from "../config";
 
 const useStudentsDetails = () => {
   const [studenDetails, setStudenDetails] = useState([]);
+
+  const updateStudentdetails = async (updatedUserData) => {
+    try {
+      const dbRef = `StudentDetails/${updatedUserData?.id}`;
+      await database.ref(dbRef).set(updatedUserData);
+    } catch (error) {}
+  };
+
+  const deleteStudentdetails = async (key) => {
+    try {
+      const dbRef = `StudentDetails/${key}`;
+      await database.ref(dbRef).remove();
+    } catch (error) {}
+  };
   useEffect(() => {
     database.ref(`StudentDetails/`).on("value", (snap) => {
+      const arr = [];
       if (snap.exists()) {
-        const arr = [];
         let slno = 1;
         const obj = snap.val();
 
@@ -14,18 +28,18 @@ const useStudentsDetails = () => {
           arr.push({
             ...obj[uid],
             slno: slno++,
-            branchName: obj[uid]?.branchName?.departement,
-            collegeName: obj[uid]?.collegeName?.college,
-            degreeName: obj[uid]?.degreeName?.course,
+            departement: obj[uid]?.branchName?.departement,
+            college: obj[uid]?.collegeName?.college,
+            course: obj[uid]?.degreeName?.course,
             id: uid,
             uid,
           });
         }
-        setStudenDetails(arr);
       }
+      setStudenDetails(arr);
     });
   }, []);
-  return { studenDetails };
+  return { studenDetails, deleteStudentdetails, updateStudentdetails };
 };
 
 export default useStudentsDetails;
