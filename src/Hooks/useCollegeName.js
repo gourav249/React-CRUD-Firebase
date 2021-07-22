@@ -6,9 +6,11 @@ const useCollegeName = () => {
     setCollegeNameList([
       { id: 1, college: "IIT, Delhi (Delhi)" },
       {
+        id: 2,
         college: "IIT, Bombay (Mumbai)",
       },
       {
+        id: 3,
         college: "IIT, Kharagpur (Kharagpur)",
       },
       {
@@ -637,6 +639,7 @@ const useCollegeName = () => {
         college: "Visvesvaraya National Institute Of Technology (Nagpur)",
       },
       {
+        id: 4,
         college:
           "Zakir Husain College Of Engineering & Technology, Aligarh (Aligarh)",
       },

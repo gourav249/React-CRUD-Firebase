@@ -1,5 +1,5 @@
 import MaterialTable from "material-table";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import swal from "@sweetalert/with-react";
 import { useHistory } from "react-router-dom";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
@@ -25,8 +25,10 @@ import {
   Toolbar,
   Typography,
   AppBar,
+  Slide,
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
+import useCollegeName from "../Hooks/useCollegeName";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -55,13 +57,29 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: "5px 10px #888888",
   },
 }));
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 const ViewDetails = () => {
   const classes = useStyles();
   const history = useHistory();
+  const { collegeNameList } = useCollegeName();
   const { studenDetails, deleteStudentdetails, updateStudentdetails } =
     useStudentsDetails();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState({});
+  // const [collegeList, setCollegeList] = useState({});
+
+  // console.log(collegeList);
+
+  // useEffect(() => {
+  //   const collegeName = {};
+  //   collegeNameList.map((item, index) => {
+  //     collegeName[index] = item.college;
+  //     setCollegeList(collegeName);
+  //   });
+  // }, [collegeNameList]);
+
   const [showAlert, setShowAlert] = useState({
     msg: "",
     isOpen: false,
@@ -129,20 +147,24 @@ const ViewDetails = () => {
           actionsColumnIndex: -1,
           exportButton: true,
           search: true,
+          tableLayout: "auto",
           headerStyle: {
             backgroundColor: "#01579b",
             color: "#FFF",
           },
         }}
         columns={[
-          { title: "Sl No.", field: "slno" },
-          { title: "Registration", field: "registration" },
+          {
+            title: <strong>{"Sl No."}</strong>,
+            field: "slno",
+          },
+          { title: <strong>{"Registration"}</strong>, field: "registration" },
           {
             title: <strong>{"User Name"}</strong>,
             field: "studentName",
             render: (row) => (
               <Grid container spacing={5} alignItems="center">
-                <Grid item lg={4} md={4} sm={5}>
+                <Grid item lg={3} md={3} sm={5}>
                   <Avatar style={{ backgroundColor: "green" }}>
                     {row.studentName[0]}
                   </Avatar>
@@ -153,13 +175,20 @@ const ViewDetails = () => {
               </Grid>
             ),
           },
-          // { title: "Name", field: "studentName" },
-          { title: "Email", field: "studentEmail" },
-          { title: "Birth Date", field: "studentBirthDate" },
-          { title: "college Name", field: "college" },
 
           {
-            title: "Profile Image",
+            title: <strong>{"Email"}</strong>,
+            field: "studentEmail",
+          },
+          { title: <strong>{"Birth Date"}</strong>, field: "studentBirthDate" },
+          {
+            title: <strong>{"college Name"}</strong>,
+            field: "college",
+            // lookup: { collegeNameList: collegeList },
+          },
+
+          {
+            title: <strong>{"Profile Image"}</strong>,
             field: "imgUrl",
             render: (row) => (
               <Grid container>
@@ -233,7 +262,13 @@ const ViewDetails = () => {
       />
 
       <div>
-        <Dialog fullScreen open={open} onClose={handleClose}>
+        <Dialog
+          fullScreen
+          open={open}
+          onClose={handleClose}
+          TransitionComponent={Transition}
+          keepMounted
+        >
           <AppBar className={classes.appBar}>
             <Toolbar>
               <Typography variant="h6" className={classes.title}>
