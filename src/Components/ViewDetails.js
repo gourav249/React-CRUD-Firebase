@@ -32,6 +32,8 @@ import {
 import { Close } from "@material-ui/icons";
 import useCollegeName from "../Hooks/useCollegeName";
 import { database, storage } from "../config";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@material-ui/core/styles";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -56,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
   },
   table: {
-    minWidth: 550,
+    // minWidth: 550,
     boxShadow: "5px 10px #888888",
   },
   backdrop: {
@@ -70,6 +72,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ViewDetails = () => {
   const classes = useStyles();
   const history = useHistory();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
   const { collegeNameList } = useCollegeName();
   const { studenDetails, deleteStudentdetails, updateStudentdetails } =
     useStudentsDetails();
@@ -79,11 +83,6 @@ const ViewDetails = () => {
   const [selectedRowId, setSelectedRowId] = useState("");
   const [openBackDrop, setOpenBackDrop] = useState(false);
 
-  const [showAlert, setShowAlert] = useState({
-    msg: "",
-    isOpen: false,
-    color: "",
-  });
   const handleExit = () => {
     swal({
       title: "Are you sure?",
@@ -160,8 +159,7 @@ const ViewDetails = () => {
           const url = await res.ref.getDownloadURL();
           await database.ref(uploadRef).set(url);
           setOpenBackDrop(false);
-          // console.log(targetFile);
-          // alert("Succesfuly Uploaded..");
+          swal("Image Uploaded SucessFull !");
         }}
       />
       <Backdrop open={openBackDrop} style={{ zIndex: 99999, color: "#fff" }}>
@@ -205,26 +203,34 @@ const ViewDetails = () => {
             headerStyle: {
               fontSize: 15,
               textAlign: "center",
-              width: "250px",
             },
-            cellStyle: { padding: "1px" },
+
             render: (row) => (
               <Grid
                 container
                 spacing={3}
                 style={{
                   display: "flex",
-                  justifyContent: "space-between",
+                  justifyContent: "center",
                   alignItems: "center",
-                  textAlign: "center",
                 }}
               >
-                <Grid item md={2} sm={6} xs={6}>
+                <Grid
+                  item
+                  md={2}
+                  sm={2}
+                  xs={6}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
                   <Avatar style={{ backgroundColor: "green" }}>
                     {row.studentName[0]}
                   </Avatar>
                 </Grid>
-                <Grid item md={10} sm={6} xs={6}>
+                <Grid item md={10} sm={10} xs={6}>
                   {row.studentName}
                 </Grid>
               </Grid>
@@ -235,6 +241,7 @@ const ViewDetails = () => {
             title: <strong>{"Email"}</strong>,
             field: "studentEmail",
             headerStyle: { fontSize: 15, textAlign: "center" },
+            cellStyle: { alignItems: "center" },
           },
           {
             title: <strong>{"Birth Date"}</strong>,
@@ -245,7 +252,6 @@ const ViewDetails = () => {
             title: <strong>{"college Name"}</strong>,
             field: "college",
             headerStyle: { fontSize: 15, textAlign: "center" },
-            // lookup: { collegeNameList: collegeList },
           },
 
           {
@@ -278,10 +284,7 @@ const ViewDetails = () => {
                           style={{
                             height: "100%",
                             width: "100%",
-                            imageRendering: "auto",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
+                            objectFit: "fill",
                           }}
                           onClick={() => uploadImage(row?.id)}
                         />
@@ -337,11 +340,10 @@ const ViewDetails = () => {
 
       <div>
         <Dialog
-          fullScreen
+          fullScreen={fullScreen}
           open={open}
           onClose={handleClose}
           TransitionComponent={Transition}
-          keepMounted
         >
           <AppBar className={classes.appBar}>
             <Toolbar>
@@ -374,11 +376,6 @@ const ViewDetails = () => {
               </Table>
             </TableContainer>
           </DialogContent>
-          {/* <DialogActions>
-            <Button variant="outlined" onClick={handleClose} color="inherit">
-              Close
-            </Button>
-          </DialogActions> */}
         </Dialog>
       </div>
     </div>
