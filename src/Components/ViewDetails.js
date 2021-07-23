@@ -1,5 +1,5 @@
 import MaterialTable from "material-table";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import swal from "@sweetalert/with-react";
 import { useHistory } from "react-router-dom";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
@@ -9,6 +9,8 @@ import {
   Avatar,
   Button,
   Dialog,
+  Backdrop,
+  CircularProgress,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -29,6 +31,7 @@ import {
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import useCollegeName from "../Hooks/useCollegeName";
+import { database, storage } from "../config";
 
 const StyledTableRow = withStyles((theme) => ({
   root: {
@@ -56,6 +59,10 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 550,
     boxShadow: "5px 10px #888888",
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff",
+  },
 }));
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -68,17 +75,9 @@ const ViewDetails = () => {
     useStudentsDetails();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState({});
-  // const [collegeList, setCollegeList] = useState({});
-
-  // console.log(collegeList);
-
-  // useEffect(() => {
-  //   const collegeName = {};
-  //   collegeNameList.map((item, index) => {
-  //     collegeName[index] = item.college;
-  //     setCollegeList(collegeName);
-  //   });
-  // }, [collegeNameList]);
+  const fileRef = useRef(null);
+  const [selectedRowId, setSelectedRowId] = useState("");
+  const [openBackDrop, setOpenBackDrop] = useState(false);
 
   const [showAlert, setShowAlert] = useState({
     msg: "",
@@ -105,6 +104,14 @@ const ViewDetails = () => {
   };
 
   const handleClose = () => setOpen(false);
+
+  const uploadImage = async (row) => {
+    try {
+      fileRef.current?.click();
+      setSelectedRowId(row);
+    } catch (error) {}
+  };
+
   const rows = [
     createData(
       "Profile Image",
@@ -141,6 +148,26 @@ const ViewDetails = () => {
   ];
   return (
     <div>
+      <input
+        type="file"
+        hidden
+        ref={fileRef}
+        onChange={async (e) => {
+          const targetFile = e.target.files[0];
+          const uploadRef = `StudentDetails/${selectedRowId}/imgUrl`;
+          setOpenBackDrop(true);
+          const res = await storage.ref(uploadRef).put(targetFile);
+          const url = await res.ref.getDownloadURL();
+          await database.ref(uploadRef).set(url);
+          setOpenBackDrop(false);
+          // console.log(targetFile);
+          // alert("Succesfuly Uploaded..");
+        }}
+      />
+      <Backdrop open={openBackDrop} style={{ zIndex: 99999, color: "#fff" }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
       <MaterialTable
         title="All Students Details"
         options={{
@@ -157,19 +184,47 @@ const ViewDetails = () => {
           {
             title: <strong>{"Sl No."}</strong>,
             field: "slno",
+            headerStyle: {
+              fontSize: 15,
+              textAlign: "center",
+            },
+            cellStyle: { textAlign: "center" },
           },
-          { title: <strong>{"Registration"}</strong>, field: "registration" },
+          {
+            title: <strong>{"Registration"}</strong>,
+            field: "registration",
+            headerStyle: {
+              fontSize: 15,
+              textAlign: "center",
+            },
+            cellStyle: { textAlign: "center" },
+          },
           {
             title: <strong>{"User Name"}</strong>,
             field: "studentName",
+            headerStyle: {
+              fontSize: 15,
+              textAlign: "center",
+              width: "250px",
+            },
+            cellStyle: { padding: "1px" },
             render: (row) => (
-              <Grid container spacing={5} alignItems="center">
-                <Grid item lg={3} md={3} sm={5}>
+              <Grid
+                container
+                spacing={3}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
+              >
+                <Grid item md={2} sm={6} xs={6}>
                   <Avatar style={{ backgroundColor: "green" }}>
                     {row.studentName[0]}
                   </Avatar>
                 </Grid>
-                <Grid item lg={2} md={2} sm={5}>
+                <Grid item md={10} sm={6} xs={6}>
                   {row.studentName}
                 </Grid>
               </Grid>
@@ -179,22 +234,40 @@ const ViewDetails = () => {
           {
             title: <strong>{"Email"}</strong>,
             field: "studentEmail",
+            headerStyle: { fontSize: 15, textAlign: "center" },
           },
-          { title: <strong>{"Birth Date"}</strong>, field: "studentBirthDate" },
+          {
+            title: <strong>{"Birth Date"}</strong>,
+            field: "studentBirthDate",
+            headerStyle: { fontSize: 15, textAlign: "center" },
+          },
           {
             title: <strong>{"college Name"}</strong>,
             field: "college",
+            headerStyle: { fontSize: 15, textAlign: "center" },
             // lookup: { collegeNameList: collegeList },
           },
 
           {
             title: <strong>{"Profile Image"}</strong>,
             field: "imgUrl",
+            headerStyle: {
+              fontSize: 15,
+              textAlign: "center",
+              margin: "0 auto",
+            },
+
             render: (row) => (
               <Grid container>
                 <Grid item lg={1} md={1} sm={2}>
                   {row && row?.imgUrl ? (
-                    <Avatar style={{ backgroundColor: "#1ab394" }}>
+                    <Avatar
+                      style={{
+                        backgroundColor: "#1ab394",
+                        height: "50px",
+                        width: "50px",
+                      }}
+                    >
                       {
                         <img
                           src={
@@ -210,6 +283,7 @@ const ViewDetails = () => {
                             justifyContent: "center",
                             alignItems: "center",
                           }}
+                          onClick={() => uploadImage(row?.id)}
                         />
                       }
                     </Avatar>
