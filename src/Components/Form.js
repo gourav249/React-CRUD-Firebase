@@ -42,6 +42,8 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    alignItems: "center",
+    borderStyle: "outset",
   },
   underline: {
     textTransform: "capitalize",
@@ -167,10 +169,20 @@ const Form = () => {
           <Container
             component="main"
             maxWidth="md"
-            style={{ border: "4px solid grey", borderRadius: "1rem" }}
+            style={{
+              border: "4px solid grey",
+              borderRadius: "1rem",
+            }}
           >
-            <Grid container spacing={3}>
-              <Grid item md={10} sm={10} xs={10}>
+            <Grid
+              container
+              spacing={3}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <Grid item md={10} sm={10} xs={9}>
                 <form className={classes.form} onSubmit={handleSubmit}>
                   <Grid container spacing={3}>
                     <Grid item md={6} sm={12} xs={12}>
@@ -333,7 +345,7 @@ const Form = () => {
                   </Grid>
                 </form>
               </Grid>
-              <Grid item md={2} sm={2} xs={2}>
+              <Grid item md={2} sm={2} xs={3}>
                 <Button
                   type="submit"
                   fullWidth
